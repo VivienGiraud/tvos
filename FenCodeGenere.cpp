@@ -15,7 +15,7 @@ EPG::EPG(QWidget *parent) :
 
     ui->setupUi(this);
 
-    //parseXML();
+    parseXML();
     setSize();
     printDate();
 
