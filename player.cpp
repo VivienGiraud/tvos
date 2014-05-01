@@ -32,12 +32,18 @@ player::~player()
 void player::Create_Player()
 {
 #ifdef __x86_64__
+    const char * const x86_64_vlc_args[] =
+    {
+        "-I", "dummy", /* Don't use any interface */
+        "--ignore-config", /* Don't use VLC's config */
+    };
     /* Load the VLC engine */
-    inst = libvlc_new (0, NULL);
+    inst = libvlc_new (sizeof(x86_64_vlc_args) / sizeof(x86_64_vlc_args[0]), x86_64_vlc_args);
     /* Create a new item */
     m = libvlc_media_new_path (inst, "/home/miasma/Documents/test.mp4");
-#elif __ARM_ARCH_7__
-    const char * const vlc_args[] = {
+#elif __ARM_ARCH_7A__
+    const char * const arm_vlc_args[] =
+    {
         "--intf=dummy",
         "--no-media-library",
         "--no-one-instance",
@@ -51,8 +57,26 @@ void player::Create_Player()
         "--demux=ffmpeg",
         "--codec=cedar",
         "--vout=cedarfb"
-      };;
-    inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+    };
+    const char * const arm_dvb_vlc_args[] =
+    {
+        "--intf=dummy",
+        "--no-media-library",
+        "--no-one-instance",
+        "--no-plugins-cache",
+        "--no-stats",
+        "--no-osd",
+        "--no-loop",
+        "--no-video-title-show",
+        "--no-keyboard-events",
+        "--no-mouse-events",
+        "--demux=ffmpeg",
+        "--codec=cedar",
+        "--vout=cedarfb",
+        "dvb-t://frequency=586000000:bandwidth=8:program=1026:adapter=0"
+    };
+    //inst = libvlc_new (sizeof(dvb_arm_vlc_args) / sizeof(dvb_arm_vlc_args[0]), dvb_arm_vlc_args);
+    inst = libvlc_new (sizeof(arm_vlc_args) / sizeof(arm_vlc_args[0]), arm_vlc_args);
     /* Create a new item */
     m = libvlc_media_new_path (inst, "/opt/test.mp4");
 #else
