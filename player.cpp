@@ -31,6 +31,24 @@ player::~player()
 
 void player::Create_Player()
 {
+<<<<<<< HEAD
+    #if __x86_64__
+    {
+        /* Load the VLC engine */
+        inst = libvlc_new (0, NULL);
+    }
+    #endif
+    #if __ARM_ARCH_7__
+    {
+        const char * const vlc_args[] = { "--demux", "ffmpeg", "--codec", "cedar", "--vout", "cedarfb", "--no-osd" };
+        inst = libvlc_new (sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
+    }
+    #endif
+
+    /* Create a new item */
+    m = libvlc_media_new_path (inst, "/home/nicolas/VLC/test.mp4");
+
+=======
 #ifdef __x86_64__
     const char * const x86_64_vlc_args[] =
     {
@@ -82,6 +100,7 @@ void player::Create_Player()
 #else
 #error Platform not supported!
 #endif
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
     /* Create a media player playing environement */
     mp = libvlc_media_player_new_from_media (m);
     libvlc_audio_set_volume(mp,sound_value);
@@ -128,6 +147,10 @@ void player::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_E)
     {
         EPG *fenetreCode = new EPG();
+<<<<<<< HEAD
+        fenetreCode->showFullScreen();
+=======
         fenetreCode->show();
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
     }
 }
