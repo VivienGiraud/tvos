@@ -9,7 +9,11 @@
    <rect>
     <x>0</x>
     <y>0</y>
+<<<<<<< HEAD
     <width>5000</width>
+=======
+    <width>1729</width>
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
     <height>704</height>
    </rect>
   </property>
@@ -30,12 +34,15 @@
   <property name="windowTitle">
    <string>Electronic programme guide</string>
   </property>
+<<<<<<< HEAD
   <property name="windowOpacity">
    <double>1.000000000000000</double>
   </property>
   <property name="animated">
    <bool>true</bool>
   </property>
+=======
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label">
     <property name="geometry">
@@ -269,6 +276,19 @@
     </property>
    </widget>
   </widget>
+<<<<<<< HEAD
+=======
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1729</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

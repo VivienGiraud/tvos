@@ -5,18 +5,31 @@
 #include "player.h"
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
 EPG::EPG(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QXSRExample)
 {
+<<<<<<< HEAD
+=======
+    player *media = new player();
+    media->showFullScreen();
+
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
     ui->setupUi(this);
 
     parseXML();
     setSize();
     printDate();
 
+<<<<<<< HEAD
     setAttribute(Qt::WA_TranslucentBackground);
 
+=======
+>>>>>>> 677473f2809a324704009825acea0efc253a9eb9
     ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
