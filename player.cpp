@@ -41,7 +41,7 @@ void player::Create_Player()
     /* Load the VLC engine */
     inst = libvlc_new (sizeof(x86_64_vlc_args) / sizeof(x86_64_vlc_args[0]), x86_64_vlc_args);
     /* Create a new item */
-    m = libvlc_media_new_path (inst, "/home/miasma/Documents/test.mp4");
+    m = libvlc_media_new_path (inst, "test.mp4");
 #elif __ARM_ARCH_7A__
     const char * const arm_vlc_args[] =
     {
