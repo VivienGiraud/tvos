@@ -15,7 +15,7 @@ EPG::EPG(QWidget *parent) :
 
     ui->setupUi(this);
 
-    parseXML();
+    //parseXML();
     setSize();
     printDate();
 
@@ -73,8 +73,8 @@ void EPG::parseXML()
 QMap<QString, QString> EPG::parse(QXmlStreamReader& xml)
 {
     QMap<QString, QString> chaa;
-    //if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "channel") { return chaa; }
-    //if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "programme") { return chaa; }
+    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "channel") { return chaa; }
+    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "programme") { return chaa; }
     QXmlStreamAttributes attributes = xml.attributes();
 
     /* Let's check that cha has a attribute. */

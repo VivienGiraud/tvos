@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--                                                                         -->
+<!-- tv - Channel list used by dr.dk epg to xmltv reader.                    -->
+<!-- Data between comment start and end tags are ignored.                    -->
+<!-- Use this to remove channels that are not used.                          -->
+<!--                                                                         -->
+<channellist type="tv">
+  <channel id = "dr.dk/mas/whatson/channel/TVH">
+    <display-name>DR HD</display-name>
+    <icon>http://www.dr.dk/tjenester/programoversigt/Images/Logos/TVH.gif</icon>
+  </channel>
+  <channel id = "dr.dk/mas/whatson/channel/TVK">
+    <display-name>DR K</display-name>
+    <icon>http://www.dr.dk/tjenester/programoversigt/Images/Logos/TVK.gif</icon>
+  </channel>
+  <channel id = "dr.dk/mas/whatson/channel/TVR">
+    <display-name>DR Ramasjang</display-name>
+    <icon>http://www.dr.dk/tjenester/programoversigt/Images/Logos/TVR.gif</icon>
+  </channel>
+  <channel id = "dr.dk/external/ritzau/channel/dru">
+    <display-name>DR Update</display-name>
+    <icon>http://www.dr.dk/tjenester/programoversigt/Images/Logos/dru.gif</icon>
+  </channel>
+  <channel id = "dr.dk/mas/whatson/channel/DR1">
+    <display-name>DR1</display-name>
+    <icon>http://www.dr.dk/tjenester/programoversigt/Images/Logos/DR1.gif</icon>
+  </channel>
+  <channel id = "dr.dk/mas/whatson/channel/DR2">
+    <display-name>DR2</display-name>
+    <icon>http://www.dr.dk/tjenester/programoversigt/Images/Logos/DR2.gif</icon>
+  </channel>
+</channellist>

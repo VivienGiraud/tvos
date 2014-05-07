@@ -29,3 +29,8 @@ else:unix: LIBS += -L$$PWD/../../../../../../../../usr/lib/ -lvlc
 
 INCLUDEPATH += $$PWD/../../../../../../../../usr/include
 DEPENDPATH += $$PWD/../../../../../../../../usr/include
+
+linux-* {
+         target.path = /opt/
+         INSTALLS += target
+}
