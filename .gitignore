@@ -3,3 +3,7 @@ player.pro.user*
 
 #Executable
 player
+
+#Video files
+*.mp4
+*.ts
