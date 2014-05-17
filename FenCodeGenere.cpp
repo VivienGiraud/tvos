@@ -1,8 +1,14 @@
 #include "FenCodeGenere.h"
 #include "ui_qxsrexample.h"
-#include <time.h>
 #include <QDesktopWidget>
-#include "player.h"
+#include <QKeyEvent>
+
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <vlc/vlc.h>
+#include <unistd.h>
 
 EPG::EPG(QWidget *parent) :
     QMainWindow(parent),
@@ -10,14 +16,16 @@ EPG::EPG(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //parseXML();
+    /* --- Initialization --- */
+    EPGCOMPARE = true;
+    sound = true;
+    sound_value = 50;
+
+    /* --- Function calls --- */
+    buildingWidgetVideo();
+    parseXML();
     setSize();
     printDate();
-
-    setAttribute(Qt::WA_TranslucentBackground);
-
-    ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 
 EPG::~EPG()
@@ -25,10 +33,82 @@ EPG::~EPG()
     delete ui;
 }
 
+void EPG::buildingWidgetVideo()
+{
+#ifdef __x86_64__
+    const char * const x86_64_vlc_args[] =
+    {
+        "-I", "dummy", /* Don't use any interface */
+        "--ignore-config", /* Don't use VLC's config */
+    };
+    /* Load the VLC engine */
+    inst = libvlc_new (sizeof(x86_64_vlc_args) / sizeof(x86_64_vlc_args[0]), x86_64_vlc_args);
+    /* Create a new item */
+    m = libvlc_media_new_path (inst, "test.mp4");
+#elif __ARM_ARCH_7A__
+    const char * const arm_vlc_args[] =
+    {
+        "--intf=dummy",
+        "--no-media-library",
+        "--no-one-instance",
+        "--no-plugins-cache",
+        "--no-stats",
+        "--no-osd",
+        "--no-loop",
+        "--no-video-title-show",
+        "--no-keyboard-events",
+        "--no-mouse-events",
+        "--demux=ffmpeg",
+        "--codec=cedar",
+        "--vout=cedarfb"
+    };
+    const char * const arm_dvb_vlc_args[] =
+    {
+        "--intf=dummy",
+        "--no-media-library",
+        "--no-one-instance",
+        "--no-plugins-cache",
+        "--no-stats",
+        "--no-osd",
+        "--no-loop",
+        "--no-video-title-show",
+        "--no-keyboard-events",
+        "--no-mouse-events",
+        "--demux=ffmpeg",
+        "--codec=cedar",
+        "--vout=cedarfb",
+        "dvb-t://frequency=586000000:bandwidth=8:program=1026:adapter=0"
+    };
+    //inst = libvlc_new (sizeof(dvb_arm_vlc_args) / sizeof(dvb_arm_vlc_args[0]), dvb_arm_vlc_args);
+    inst = libvlc_new (sizeof(arm_vlc_args) / sizeof(arm_vlc_args[0]), arm_vlc_args);
+    /* Create a new item */
+    m = libvlc_media_new_path (inst, "/opt/test.mp4");
+#else
+#error Platform not supported!
+#endif
+
+/* Create a media player playing environement */
+mp = libvlc_media_player_new_from_media (m);
+libvlc_audio_set_volume(mp,sound_value);
+libvlc_media_player_set_xwindow(mp, ui->video->winId());
+
+/* play the media_player */
+libvlc_media_player_play (mp);
+
+screenSize2 = screen2.screenGeometry();
+int a = screenSize2.width();
+int b = screenSize2.height();
+ui->video->setGeometry(0,0,a,b);
+ui->video->setFocus();
+}
+
 void EPG::parseXML()
 {
+    ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
     comparateur = 10;
-    ui->listWidget->clear();
+    ui->channel_list->clear();
 
     /* Open File */
     QFile* file = new QFile("epg.xml");
@@ -126,7 +206,7 @@ void EPG::addToUI(QList< QMap<QString,QString> >& cha)
     while (!cha.isEmpty())
     {
             QMap<QString,QString> chaa = cha.takeAt(0);
-            if(chaa["display-name"] != 0){ ui->listWidget->addItem(chaa["display-name"]); } //TO DO : saut de ligne
+            if(chaa["display-name"] != 0){ ui->channel_list->addItem(chaa["display-name"]); } //TO DO : saut de ligne
             if(chaa["display-name"] != 0){ ui->textEdit_2->insertPlainText(chaa["display-name"]); } //TO DO : saut de ligne
             if(chaa["title"] != 0){ ui->textEdit->append("Nom du programme : "+chaa["title"]); }
             if(chaa["desc"] != 0){ ui->textEdit_5->append("Desc : "+chaa["desc"]); }
@@ -138,24 +218,23 @@ void EPG::addToUI(QList< QMap<QString,QString> >& cha)
 
 void EPG::setSize()
 {
-    QDesktopWidget screen; // (Retrieve the size of the office + Geometric placement)
-    QRect screenSize = screen.screenGeometry();
-    int x = screenSize.width();
-    int y = screenSize.height();
-    ui->listWidget->setFixedHeight(y/2.5);
-    ui->textEdit_4->setFixedHeight(y/2.5);
-    ui->textEdit_4->setFixedWidth(x/1.27);
+    int x = screenSize2.width();
+    int y = screenSize2.height();
 
+    /* --- Channel list --- */
+    ui->channel_list->setGeometry(x/50,y/1.8,x/6.8,y/2.5);
+    ui->channel_list->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    ui->channel_list->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
-    ui->label_2->setFixedHeight(y/30);
-    ui->label_4->setFixedHeight(y/30);
-    ui->label_5->setFixedHeight(y/30);
-    ui->label_6->setFixedHeight(y/30);
+    /* Time programs --- */
+    ui->time_programs->setGeometry(x/5,y/1.8,x/1.3,y/2.5);
+    ui->time_programs->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    ui->time_programs->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    ui->Time_programslabel1->setGeometry(x/5,y/3.1,x/1.3,y/2.5);
+    ui->Time_programslabel1_2->setGeometry(x/3.5,y/3.1,x/1.3,y/2.5);
+    ui->Time_programslabel1_3->setGeometry(x/2.7,y/3.1,x/1.3,y/2.5);
+    ui->Time_programslabel1_4->setGeometry(x/2.2,y/3.1,x/1.3,y/2.5);
 
-    ui->listWidget->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->listWidget->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit_4->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit_4->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     ui->textEdit_5->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     ui->textEdit_5->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     ui->textEdit->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
@@ -178,14 +257,68 @@ void EPG::printDate()
      ui->label_3->setText(QString::number(epg_clock->tm_hour)+":"+QString::number(epg_clock->tm_min)+":"+QString::number(epg_clock->tm_sec));
 
      int currentTime = epg_clock->tm_hour;
-     ui->label_2->setText(QString::number(currentTime)+":00");
+     ui->Time_programslabel1->setText(QString::number(currentTime)+":00");
 
      currentTime = epg_clock->tm_hour+1;
-     ui->label_4->setText(QString::number(currentTime)+":00");
+     ui->Time_programslabel1_2->setText(QString::number(currentTime)+":00");
 
      currentTime = epg_clock->tm_hour+2;
-     ui->label_5->setText(QString::number(currentTime)+":00");
+     ui->Time_programslabel1_3->setText(QString::number(currentTime)+":00");
 
      currentTime = epg_clock->tm_hour+3;
-     ui->label_6->setText(QString::number(currentTime)+":00");
+     ui->Time_programslabel1_4->setText(QString::number(currentTime)+":00");
+}
+
+void EPG::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_E)
+    {
+        if(EPGCOMPARE == true)
+        {
+            screenSize2 = screen2.screenGeometry();
+            int a = screenSize2.width();
+            int b = screenSize2.height();
+            ui->video->setGeometry(15,15,a*0.375,b*0.375);
+            EPGCOMPARE = false;
+        }
+        else
+        {
+            screenSize2 = screen2.screenGeometry();
+            int a = screenSize2.width();
+            int b = screenSize2.height();
+            ui->video->setGeometry(0,0,a,b);
+            EPGCOMPARE = true;
+        }
+    }
+    if(event->key() == Qt::Key_Escape)
+    {
+        libvlc_media_player_stop (mp); // Stop playing
+        /*Free the media_player */
+        libvlc_media_player_release (mp);
+        libvlc_release (inst);
+        this->close();
+    }
+
+    if(event->key() == Qt::Key_M)
+    {
+        if (sound == true)
+        {
+            libvlc_audio_set_volume(mp,0);
+            sound = false;
+        }
+        else
+        {
+            libvlc_audio_set_volume(mp,sound_value);
+            sound = true;
+        }
+    }
+    if(event->key() == Qt::Key_L)
+    {
+        libvlc_video_set_logo_string(mp, 1, "test.png");
+        libvlc_video_set_logo_int(mp, libvlc_logo_x, 505);
+        libvlc_video_set_logo_int(mp, libvlc_logo_y, 305);
+        libvlc_video_set_logo_int(mp, libvlc_logo_opacity, 255);
+        libvlc_video_set_logo_int(mp, libvlc_logo_enable, 1);
+    }
+
 }

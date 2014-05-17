@@ -12,13 +12,12 @@ TARGET = player
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        player.cpp \
     FenCodeGenere.cpp
 
-HEADERS  += player.h \
+HEADERS  += \
     FenCodeGenere.h
 
-FORMS    += player.ui \
+FORMS    += \
     qxsrexample.ui
 
 QT += core gui xml
