@@ -49,6 +49,9 @@ private:
     libvlc_media_t *m;
     libvlc_instance_t * inst;
     libvlc_media_player_t *mp;
+    libvlc_media_list_player_t *mlp;
+    libvlc_media_list_t *ml;
+    libvlc_media_player_t * ThePlayer = NULL;
 
     QDesktopWidget screen2;
     QRect screenSize2;
