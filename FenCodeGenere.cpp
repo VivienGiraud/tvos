@@ -24,7 +24,7 @@ EPG::EPG(QWidget *parent) :
 
     /* --- Function calls --- */
     buildingWidgetVideo();
-    parseXML();
+    //parseXML();
     setSize();
     printDate();
 }
@@ -44,8 +44,6 @@ void EPG::buildingWidgetVideo()
     };
     /* Load the VLC engine */
     inst = libvlc_new (sizeof(x86_64_vlc_args) / sizeof(x86_64_vlc_args[0]), x86_64_vlc_args);
-    /* Create a new item */
-    m = libvlc_media_new_path (inst, "test.mp4");
 #elif __ARM_ARCH_7A__
     const char * const arm_vlc_args[] =
     {
@@ -63,38 +61,37 @@ void EPG::buildingWidgetVideo()
         "--codec=cedar",
         "--vout=cedarfb"
     };
-    const char * const arm_dvb_vlc_args[] =
-    {
-        "--intf=dummy",
-        "--no-media-library",
-        "--no-one-instance",
-        "--no-plugins-cache",
-        "--no-stats",
-        "--no-osd",
-        "--no-loop",
-        "--no-video-title-show",
-        "--no-keyboard-events",
-        "--no-mouse-events",
-        "--demux=ffmpeg",
-        "--codec=cedar",
-        "--vout=cedarfb",
-        "dvb-t://frequency=586000000:bandwidth=8:program=1026:adapter=0"
-    };
-    //inst = libvlc_new (sizeof(dvb_arm_vlc_args) / sizeof(dvb_arm_vlc_args[0]), dvb_arm_vlc_args);
     inst = libvlc_new (sizeof(arm_vlc_args) / sizeof(arm_vlc_args[0]), arm_vlc_args);
-    /* Create a new item */
-    m = libvlc_media_new_path (inst, "/opt/test.mp4");
 #else
 #error Platform not supported!
 #endif
+/* Set playlist */
+m = libvlc_media_new_path (inst, "vlcchans.xspf");
+#ifdef DEBUG
+m = libvlc_media_new_path (inst, "test.mp4");
+#endif
+
+ml = libvlc_media_list_new (inst);
+
+mlp = libvlc_media_list_player_new (inst);
+ThePlayer = libvlc_media_player_new(inst);
+
+/* Point the media list at our media list player. This is the crucial ! */
+libvlc_media_list_player_set_media_player(mlp, ThePlayer);
+
+/* Parse playlist */
+for (unsigned i = 0; i < 5; i++)
+    libvlc_media_list_add_media( ml, m );
+
+libvlc_media_list_player_set_media_list( mlp, ml );
+libvlc_media_list_player_play_item_at_index( mlp, 0 );
 
 /* Create a media player playing environement */
-mp = libvlc_media_player_new_from_media (m);
-libvlc_audio_set_volume(mp,sound_value);
-libvlc_media_player_set_xwindow(mp, ui->video->winId());
+libvlc_audio_set_volume(ThePlayer,sound_value);
+libvlc_media_player_set_xwindow(ThePlayer, ui->video->winId());
 
 /* play the media_player */
-libvlc_media_player_play (mp);
+libvlc_media_list_player_play(mlp);
 
 screenSize2 = screen2.screenGeometry();
 int a = screenSize2.width();
@@ -105,8 +102,8 @@ ui->video->setFocus();
 
 void EPG::parseXML()
 {
-    ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    //ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    //ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     comparateur = 10;
     ui->channel_list->clear();
