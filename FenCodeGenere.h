@@ -58,6 +58,7 @@ private:
     int sound_value;
 private slots:
     void parseXML();
+    void showTime();
 
 };
 

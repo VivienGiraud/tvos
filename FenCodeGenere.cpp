@@ -1,9 +1,10 @@
 #include "FenCodeGenere.h"
 #include "ui_qxsrexample.h"
+
 #include <QDesktopWidget>
 #include <QKeyEvent>
+#include <QtGui>
 
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -226,7 +227,7 @@ void EPG::setSize()
     ui->channel_list->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     ui->channel_list->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
-    /* Time programs --- */
+    /* --- Time programs --- */
     ui->time_programs->setGeometry(x/5,y/1.8,x/1.3,y/2.5);
     ui->time_programs->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     ui->time_programs->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
@@ -234,6 +235,11 @@ void EPG::setSize()
     ui->Time_programslabel1_2->setGeometry(x/3.5,y/3.1,x/1.3,y/2.5);
     ui->Time_programslabel1_3->setGeometry(x/2.7,y/3.1,x/1.3,y/2.5);
     ui->Time_programslabel1_4->setGeometry(x/2.2,y/3.1,x/1.3,y/2.5);
+    ui->label_dynamictime->setGeometry(x/50,y/3.5,x/1.3,y/2.5);
+
+    /* --- Label available --- */
+    ui->label_available->setGeometry(x/50,y/3.1,x/1.3,y/2.5);
+
 
     ui->textEdit_5->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     ui->textEdit_5->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
@@ -245,28 +251,31 @@ void EPG::setSize()
 
 void EPG::printDate()
 {
-    time_t structTime;
-    struct tm *epg_clock;
+    /* --- Dynamic clock --- */
+     QTimer *timer = new QTimer(this);
+     connect(timer, SIGNAL(timeout()), this, SLOT(showTime()));
+     timer->start(1000);
+     showTime();
 
-     if (time (&structTime) == -1)
-     {
-        exit(100);
-     }
-
-     epg_clock = localtime(&structTime);
-     ui->label_3->setText(QString::number(epg_clock->tm_hour)+":"+QString::number(epg_clock->tm_min)+":"+QString::number(epg_clock->tm_sec));
-
-     int currentTime = epg_clock->tm_hour;
-     ui->Time_programslabel1->setText(QString::number(currentTime)+":00");
-
-     currentTime = epg_clock->tm_hour+1;
-     ui->Time_programslabel1_2->setText(QString::number(currentTime)+":00");
-
-     currentTime = epg_clock->tm_hour+2;
-     ui->Time_programslabel1_3->setText(QString::number(currentTime)+":00");
-
-     currentTime = epg_clock->tm_hour+3;
-     ui->Time_programslabel1_4->setText(QString::number(currentTime)+":00");
+     /* --- Dynamic labels --- */
+     QTime time_label = QTime::currentTime();
+     QString text_label = time_label.toString("hh:00");
+     ui->Time_programslabel1->setText(text_label);
+     time_label = time_label.addSecs(3600);
+     text_label = time_label.toString("hh:00");
+     ui->Time_programslabel1_2->setText(text_label);
+     time_label = time_label.addSecs(3600);
+     text_label = time_label.toString("hh:00");
+     ui->Time_programslabel1_3->setText(text_label);
+     time_label = time_label.addSecs(3600);
+     text_label = time_label.toString("hh:00");
+     ui->Time_programslabel1_4->setText(text_label);
+}
+void EPG::showTime()
+{
+    QTime time = QTime::currentTime();
+    QString text = time.toString("hh:mm:ss");
+    ui->label_dynamictime->setText(text);
 }
 
 void EPG::keyPressEvent(QKeyEvent *event)
@@ -320,5 +329,4 @@ void EPG::keyPressEvent(QKeyEvent *event)
         libvlc_video_set_logo_int(mp, libvlc_logo_opacity, 255);
         libvlc_video_set_logo_int(mp, libvlc_logo_enable, 1);
     }
-
 }

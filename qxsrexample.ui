@@ -37,7 +37,7 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="label_available">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -104,7 +104,7 @@
      </font>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="label_dynamictime">
     <property name="geometry">
      <rect>
       <x>30</x>
