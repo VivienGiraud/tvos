@@ -1,14 +1,57 @@
 {
-    "settings": {
-        "volume": "25",
-        "previous_channel": "1",
-        "channels_conf": [
-                { "id": "7", "name": "ARTE HD", "frequency": "586000000", "bandwidth": "8", "program": "1031" },
-                { "id": "31", "name": "PARIS PREMIERE", "frequency": "586000000", "bandwidth": "8", "program": "1028" },
-                { "id": "11", "name": "NT1", "frequency": "586000000", "bandwidth": "8", "program": "1027" },
-                { "id": "9", "name": "W9", "frequency": "586000000", "bandwidth": "8", "program": "1026" },
-                { "id": "6", "name": "M6", "frequency": "586000000", "bandwidth": "8", "program": "1025" }
+    "settings":
+    [
+        {
+            "dvb-t":
+            {
+                "volume": "25",
+                "previous_channel": "1",
+                "channels_path": "/opt/tvos/vlcchans.xspf"
+            }
+        }
+
+        {
+            "media":
+            {
+                "video_folder": "/home/tvos/video",
+                "music_folder": "/home/tvos/music",
+                "image_folder": "/home/tvos/image",
+                "timeshift_folder": "/home/tvos/timeshift"
+            }
+        }
+
+        {
+            "langages":
+            [
+                {"audio": "FR(fr)"}
+                {"subtitle": "FR(fr)", "subtitle_state": "0"}
             ]
         }
-    }
+
+        {
+            "network":
+            {
+                "ethernet":
+                [
+                    {"id": "0", "dhcp": "1", "ip": "", "gateway": ""}
+                ]
+            }
+        }
+
+        {
+            "os":
+            {
+                "keyboard_layout": "FR(fr)",
+                "locale": "Europe/Paris"
+            }
+        }
+
+        {
+            "version":
+            {
+                "number": "0.1 (avocado)",
+                "revision": "alpha 1"
+            }
+        }
+    ]
 }
