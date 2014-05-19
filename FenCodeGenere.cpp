@@ -1,5 +1,6 @@
 #include "FenCodeGenere.h"
 #include "ui_qxsrexample.h"
+#include "subtitles.h"
 
 #include <QDesktopWidget>
 #include <QKeyEvent>
@@ -41,6 +42,7 @@ void EPG::buildingWidgetVideo()
     {
         "-I", "dummy", /* Don't use any interface */
         "--ignore-config", /* Don't use VLC's config */
+        "--sub-filter=marq",
     };
     /* Load the VLC engine */
     inst = libvlc_new (sizeof(x86_64_vlc_args) / sizeof(x86_64_vlc_args[0]), x86_64_vlc_args);
@@ -74,10 +76,10 @@ m = libvlc_media_new_path (inst, "test.mp4");
 ml = libvlc_media_list_new (inst);
 
 mlp = libvlc_media_list_player_new (inst);
-ThePlayer = libvlc_media_player_new(inst);
+tvos_player = libvlc_media_player_new(inst);
 
 /* Point the media list at our media list player. This is the crucial ! */
-libvlc_media_list_player_set_media_player(mlp, ThePlayer);
+libvlc_media_list_player_set_media_player(mlp, tvos_player);
 
 /* Parse playlist */
 for (unsigned i = 0; i < 5; i++)
@@ -87,11 +89,12 @@ libvlc_media_list_player_set_media_list( mlp, ml );
 libvlc_media_list_player_play_item_at_index( mlp, 0 );
 
 /* Create a media player playing environement */
-libvlc_audio_set_volume(ThePlayer,sound_value);
-libvlc_media_player_set_xwindow(ThePlayer, ui->video->winId());
+libvlc_media_player_set_xwindow(tvos_player, ui->video->winId());
 
 /* play the media_player */
 libvlc_media_list_player_play(mlp);
+
+libvlc_audio_set_volume(tvos_player, sound_value);
 
 screenSize2 = screen2.screenGeometry();
 int a = screenSize2.width();
@@ -298,9 +301,9 @@ void EPG::keyPressEvent(QKeyEvent *event)
     }
     if(event->key() == Qt::Key_Escape)
     {
-        libvlc_media_player_stop (mp); // Stop playing
+        libvlc_media_player_stop (tvos_player); // Stop playing
         /*Free the media_player */
-        libvlc_media_player_release (mp);
+        libvlc_media_player_release (tvos_player);
         libvlc_release (inst);
         this->close();
     }
@@ -309,21 +312,51 @@ void EPG::keyPressEvent(QKeyEvent *event)
     {
         if (sound == true)
         {
-            libvlc_audio_set_volume(mp,0);
+            libvlc_audio_set_volume(tvos_player,0);
             sound = false;
         }
         else
         {
-            libvlc_audio_set_volume(mp,sound_value);
+            libvlc_audio_set_volume(tvos_player,sound_value);
             sound = true;
         }
     }
     if(event->key() == Qt::Key_L)
     {
-        libvlc_video_set_logo_string(mp, 1, "test.png");
-        libvlc_video_set_logo_int(mp, libvlc_logo_x, 505);
-        libvlc_video_set_logo_int(mp, libvlc_logo_y, 305);
-        libvlc_video_set_logo_int(mp, libvlc_logo_opacity, 255);
-        libvlc_video_set_logo_int(mp, libvlc_logo_enable, 1);
+        libvlc_video_set_logo_string(tvos_player, 1, "test.png");
+        libvlc_video_set_logo_int(tvos_player, libvlc_logo_x, 505);
+        libvlc_video_set_logo_int(tvos_player, libvlc_logo_y, 305);
+        libvlc_video_set_logo_int(tvos_player, libvlc_logo_opacity, 255);
+        libvlc_video_set_logo_int(tvos_player, libvlc_logo_enable, 1);
+    }
+    if(event->key() == Qt::Key_N) //To defined
+    {
+        libvlc_media_list_player_next(mlp);
+        libvlc_video_set_marquee_string(tvos_player,libvlc_marquee_Text,"Test");
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Size,60);
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Opacity,255); //opacity
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Color,0x00FFFFFF); //color
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Timeout,1000); //timeout
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_X,0);  //x-coordinate
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Y,0);  //y-coordinate
+        libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Enable,1);
+    }
+    if(event->key() == Qt::Key_P) //To defined
+    {
+        libvlc_media_list_player_previous(mlp);
+
+        libvlc_video_set_marquee_string(tvos_player, libvlc_marquee_Text, "TEST");
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Opacity, 50);
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_X, 10);
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Y, 10);
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Timeout, 4000);
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Size, 40);
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Color, 0xffffff);
+        libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Enable, 1);
+    }
+    if(event->key() == Qt::Key_S) //To defined
+    {
+        subtitles sub;
+        sub.setSubtitlesNext(tvos_player);
     }
 }

@@ -46,12 +46,12 @@ private:
     void buildingWidgetVideo();
 
     int comparateur;
-    libvlc_media_t *m;
-    libvlc_instance_t * inst;
-    libvlc_media_player_t *mp;
-    libvlc_media_list_player_t *mlp;
-    libvlc_media_list_t *ml;
-    libvlc_media_player_t * ThePlayer = NULL;
+    libvlc_media_t *m = NULL;
+    libvlc_instance_t * inst = NULL;
+    libvlc_media_player_t *mp = NULL;
+    libvlc_media_list_player_t *mlp = NULL;
+    libvlc_media_list_t *ml = NULL;
+    libvlc_media_player_t * tvos_player = NULL;
 
     QDesktopWidget screen2;
     QRect screenSize2;
