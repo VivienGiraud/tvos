@@ -134,7 +134,10 @@ void EPG::parseXML()
 
     /* Open File */
     QFile* file = new QFile("epg.xml");
-    if (!file->open(QIODevice::ReadOnly | QIODevice::Text)){ exit(1); }
+    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        exit(1);
+    }
 
     QXmlStreamReader xml(file);
     QList< QMap<QString,QString> > cha;
@@ -172,15 +175,39 @@ void EPG::parseXML()
 QMap<QString, QString>EPG::parse(QXmlStreamReader& xml)
 {
     QMap<QString, QString> chaa;
-    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "channel") { return chaa; }
-    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "programme") { return chaa; }
+    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "channel")
+    {
+        return chaa;
+    }
+
+    if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "programme")
+    {
+        return chaa;
+    }
+
     QXmlStreamAttributes attributes = xml.attributes();
 
-    /* Let's check that cha has a attribute. */
-    if(attributes.hasAttribute("id")) { chaa["id"] = attributes.value("id").toString();}
-    if(attributes.hasAttribute("channel")) { chaa["channel"] = attributes.value("channel").toString(); }
-    if(attributes.hasAttribute("start")) { chaa["start"] = attributes.value("start").toString();}
-    if(attributes.hasAttribute("stop")) { chaa["end"] = attributes.value("stop").toString();}
+    /* Let's check that chaa has a attribute. */
+    if(attributes.hasAttribute("id"))
+    {
+        chaa["id"] = attributes.value("id").toString();
+    }
+
+    if(attributes.hasAttribute("channel"))
+    {
+        chaa["channel"] = attributes.value("channel").toString();
+    }
+
+    if(attributes.hasAttribute("start"))
+    {
+        chaa["start"] = attributes.value("start").toString();
+    }
+
+    if(attributes.hasAttribute("stop"))
+    {
+        chaa["end"] = attributes.value("stop").toString();
+    }
+
     xml.readNext();
 
     while(!(xml.tokenType() == QXmlStreamReader::EndElement))
@@ -188,9 +215,20 @@ QMap<QString, QString>EPG::parse(QXmlStreamReader& xml)
         if(xml.tokenType() == QXmlStreamReader::StartElement)
         {
             /* We've found display-name / title. */
-            if(xml.name() == "display-name") { this->addElementDataToMap(xml, chaa); }
-            if(xml.name() == "title") { this->addElementDataToMap(xml, chaa); }
-            if(xml.name() == "desc") { this->addElementDataToMap(xml, chaa); }
+            if(xml.name() == "display-name")
+            {
+                this->addElementDataToMap(xml, chaa);
+            }
+
+            if(xml.name() == "title")
+            {
+                this->addElementDataToMap(xml, chaa);
+            }
+
+            if(xml.name() == "desc")
+            {
+                this->addElementDataToMap(xml, chaa);
+            }
         }
         /* ...and next... */
         xml.readNext();
@@ -228,39 +266,62 @@ void EPG::addToUI(QList< QMap<QString,QString> >& cha)
     while (!cha.isEmpty())
     {
             QMap<QString,QString> chaa = cha.takeAt(0);
-            if(chaa["display-name"] != 0){ ui->channel_list->addItem(chaa["display-name"]); } //TO DO : saut de ligne
-            if(chaa["display-name"] != 0){ ui->textEdit_2->insertPlainText(chaa["display-name"]); } //TO DO : saut de ligne
-            if(chaa["title"] != 0){ ui->textEdit->append("Nom du programme : "+chaa["title"]); }
-            if(chaa["desc"] != 0){ ui->textEdit_5->append("Desc : "+chaa["desc"]); }
-            if(chaa["start"] != 0){ ui->textEdit_5->insertPlainText("\nHeure de debut : "+chaa["start"]+"\n"); }
-            if(chaa["end"] != 0){ ui->textEdit_5->insertPlainText("Heure de fin : "+chaa["end"]+"\n"); }
+
+            if(chaa["display-name"] != 0)
+            {
+                ui->channel_list->addItem(chaa["display-name"]);
+            } //TO DO : saut de ligne
+
+            if(chaa["display-name"] != 0)
+            {
+                ui->textEdit_2->insertPlainText(chaa["display-name"]);
+            } //TO DO : saut de ligne
+
+            if(chaa["title"] != 0)
+            {
+                ui->textEdit->append("Nom du programme : "+chaa["title"]);
+            }
+
+            if(chaa["desc"] != 0)
+            {
+                ui->textEdit_5->append("Desc : "+chaa["desc"]);
+            }
+
+            if(chaa["start"] != 0)
+            {
+                ui->textEdit_5->insertPlainText("\nHeure de debut : "+chaa["start"]+"\n");
+            }
+
+            if(chaa["end"] != 0)
+            {
+                ui->textEdit_5->insertPlainText("Heure de fin : "+chaa["end"]+"\n");
+            }
             i++;
     }
 }
 
 void EPG::setSize()
 {
-    int x = screenSize2.width();
-    int y = screenSize2.height();
+    int screen2Width = screenSize2.width();
+    int screen2Height = screenSize2.height();
 
     /* --- Channel list --- */
-    ui->channel_list->setGeometry(x/50,y/1.8,x/6.8,y/2.5);
+    ui->channel_list->setGeometry(screen2Width/50,screen2Height/1.8,screen2Width/6.8,screen2Height/2.5);
     ui->channel_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->channel_list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     /* --- Time programs --- */
-    ui->time_programs->setGeometry(x/5,y/1.8,x/1.3,y/2.5);
+    ui->time_programs->setGeometry(screen2Width/5,screen2Height/1.8,screen2Width/1.3,screen2Height/2.5);
     ui->time_programs->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->time_programs->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->Time_programslabel1->setGeometry(x/5,y/3.1,x/1.3,y/2.5);
-    ui->Time_programslabel1_2->setGeometry(x/3.5,y/3.1,x/1.3,y/2.5);
-    ui->Time_programslabel1_3->setGeometry(x/2.7,y/3.1,x/1.3,y/2.5);
-    ui->Time_programslabel1_4->setGeometry(x/2.2,y/3.1,x/1.3,y/2.5);
-    ui->label_dynamictime->setGeometry(x/50,y/3.5,x/1.3,y/2.5);
+    ui->Time_programslabel1->setGeometry(screen2Width/5,screen2Height/3.1,screen2Width/1.3,screen2Height/2.5);
+    ui->Time_programslabel1_2->setGeometry(screen2Width/3.5,screen2Height/3.1,screen2Width/1.3,screen2Height/2.5);
+    ui->Time_programslabel1_3->setGeometry(screen2Width/2.7,screen2Height/3.1,screen2Width/1.3,screen2Height/2.5);
+    ui->Time_programslabel1_4->setGeometry(screen2Width/2.2,screen2Height/3.1,screen2Width/1.3,screen2Height/2.5);
+    ui->label_dynamictime->setGeometry(screen2Width/50,screen2Height/3.5,screen2Width/1.3,screen2Height/2.5);
 
     /* --- Label available --- */
-    ui->label_available->setGeometry(x/50,y/3.1,x/1.3,y/2.5);
-
+    ui->label_available->setGeometry(screen2Width/50,screen2Height/3.1,screen2Width/1.3,screen2Height/2.5);
 
     ui->textEdit_5->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->textEdit_5->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -318,6 +379,7 @@ void EPG::keyPressEvent(QKeyEvent *event)
             EPGCOMPARE = true;
         }
     }
+
     if(event->key() == Qt::Key_Escape)
     {
         libvlc_media_player_stop (tvos_player); // Stop playing
@@ -344,10 +406,12 @@ void EPG::keyPressEvent(QKeyEvent *event)
             printImg(UNMUTEIMG, 1000);
         }
     }
+
     if(event->key() == Qt::Key_L)
     {
         printImg(TESTIMG, 1000);
     }
+
     if(event->key() == Qt::Key_N) //To defined
     {
         libvlc_media_list_player_next(mlp);
@@ -360,6 +424,7 @@ void EPG::keyPressEvent(QKeyEvent *event)
         libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Y,0);  //y-coordinate
         libvlc_video_set_marquee_int(tvos_player,libvlc_marquee_Enable,1);
     }
+
     if(event->key() == Qt::Key_P) //To defined
     {
         libvlc_media_list_player_previous(mlp);
@@ -373,6 +438,7 @@ void EPG::keyPressEvent(QKeyEvent *event)
         libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Color, 0xffffff);
         libvlc_video_set_marquee_int(tvos_player, libvlc_marquee_Enable, 1);
     }
+
     if(event->key() == Qt::Key_S) //To defined
     {
         subtitles sub;
