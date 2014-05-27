@@ -241,13 +241,13 @@ void EPG::setSize()
 
     /* --- Channel list --- */
     ui->channel_list->setGeometry(x/50,y/1.8,x/6.8,y/2.5);
-    ui->channel_list->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->channel_list->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    ui->channel_list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->channel_list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     /* --- Time programs --- */
     ui->time_programs->setGeometry(x/5,y/1.8,x/1.3,y/2.5);
-    ui->time_programs->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->time_programs->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    ui->time_programs->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->time_programs->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->Time_programslabel1->setGeometry(x/5,y/3.1,x/1.3,y/2.5);
     ui->Time_programslabel1_2->setGeometry(x/3.5,y/3.1,x/1.3,y/2.5);
     ui->Time_programslabel1_3->setGeometry(x/2.7,y/3.1,x/1.3,y/2.5);
@@ -258,12 +258,12 @@ void EPG::setSize()
     ui->label_available->setGeometry(x/50,y/3.1,x/1.3,y/2.5);
 
 
-    ui->textEdit_5->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit_5->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit_2->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-    ui->textEdit_2->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    ui->textEdit_5->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textEdit_5->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textEdit_2->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->textEdit_2->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 void EPG::printDate()
@@ -299,20 +299,18 @@ void EPG::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_E)
     {
+        int screen2Width = screenSize2.width();
+        int screen2Height = screenSize2.height();
         if(EPGCOMPARE == true)
         {
             screenSize2 = screen2.screenGeometry();
-            int a = screenSize2.width();
-            int b = screenSize2.height();
-            ui->video->setGeometry(15,15,a*0.375,b*0.375);
+            ui->video->setGeometry(15,15,screen2Width*0.375,screen2Height*0.375);
             EPGCOMPARE = false;
         }
         else
         {
             screenSize2 = screen2.screenGeometry();
-            int a = screenSize2.width();
-            int b = screenSize2.height();
-            ui->video->setGeometry(0,0,a,b);
+            ui->video->setGeometry(0,0,screen2Width,screen2Height);
             EPGCOMPARE = true;
         }
     }
@@ -332,19 +330,19 @@ void EPG::keyPressEvent(QKeyEvent *event)
             /* mute */
             libvlc_audio_set_volume(tvos_player,0);
             sound = false;
-            printImg("img/mute.png", 1000);
+            printImg(MUTEIMG, 1000);
         }
         else
         {
             /* unmute */
             libvlc_audio_set_volume(tvos_player,sound_value);
             sound = true;
-            printImg("img/unmute.png", 1000);
+            printImg(UNMUTEIMG, 1000);
         }
     }
     if(event->key() == Qt::Key_L)
     {
-        printImg("test.png", 1000);
+        printImg(TESTIMG, 1000);
     }
     if(event->key() == Qt::Key_N) //To defined
     {
