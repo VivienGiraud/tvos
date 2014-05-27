@@ -21,7 +21,7 @@ EPG::EPG(QWidget *parent) :
     /* --- Initialization --- */
     EPGCOMPARE = true;
     sound = true;
-    sound_value = 50;
+    sound_value = 20;
 
     /* --- Function calls --- */
     buildingWidgetVideo();
@@ -43,6 +43,7 @@ void EPG::buildingWidgetVideo()
         "-I", "dummy", /* Don't use any interface */
         "--ignore-config", /* Don't use VLC's config */
         "--sub-filter=marq",
+        "--sub-filter=logo"
     };
     /* Load the VLC engine */
     inst = libvlc_new (sizeof(x86_64_vlc_args) / sizeof(x86_64_vlc_args[0]), x86_64_vlc_args);
@@ -67,10 +68,11 @@ void EPG::buildingWidgetVideo()
 #else
 #error Platform not supported!
 #endif
+#ifdef __x86_64__
+m = libvlc_media_new_path (inst, "test.mp4");
+#elif __ARM_ARCH_7A__
 /* Set playlist */
 m = libvlc_media_new_path (inst, "vlcchans.xspf");
-#ifdef DEBUG
-m = libvlc_media_new_path (inst, "test.mp4");
 #endif
 
 ml = libvlc_media_list_new (inst);
@@ -83,10 +85,10 @@ libvlc_media_list_player_set_media_player(mlp, tvos_player);
 
 /* Parse playlist */
 for (unsigned i = 0; i < 5; i++)
-    libvlc_media_list_add_media( ml, m );
+    libvlc_media_list_add_media(ml, m);
 
-libvlc_media_list_player_set_media_list( mlp, ml );
-libvlc_media_list_player_play_item_at_index( mlp, 0 );
+libvlc_media_list_player_set_media_list(mlp, ml);
+libvlc_media_list_player_play_item_at_index(mlp, 0);
 
 /* Create a media player playing environement */
 libvlc_media_player_set_xwindow(tvos_player, ui->video->winId());
@@ -103,10 +105,25 @@ ui->video->setGeometry(0,0,a,b);
 ui->video->setFocus();
 }
 
+/* name = path to the file, ms = display for how much milliseconds */
+void EPG::printImg(char *name, int ms)
+{
+  libvlc_video_set_logo_string(tvos_player, libvlc_logo_file, name);
+  libvlc_video_set_logo_int(tvos_player, libvlc_logo_enable, 1);
+  libvlc_video_set_logo_int(tvos_player, libvlc_logo_x, 505);
+  libvlc_video_set_logo_int(tvos_player, libvlc_logo_y, 0);
+  libvlc_video_set_logo_int(tvos_player, libvlc_logo_opacity, 128);
+
+  struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+  nanosleep(&ts, NULL);
+
+  libvlc_video_set_logo_int(tvos_player, libvlc_logo_enable, 0);
+}
+
 void EPG::parseXML()
 {
-    //ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    //ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    ui->labelPic->setPixmap(QPixmap(QApplication::applicationDirPath() + "/logo/22.jpg").scaled(ui->labelPic->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    ui->labelCsa->setPixmap(QPixmap(QApplication::applicationDirPath() + "/CSA/18.gif").scaled(ui->labelCsa->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
     comparateur = 10;
     ui->channel_list->clear();
@@ -148,7 +165,7 @@ void EPG::parseXML()
     this->addToUI(cha);
 }
 
-QMap<QString, QString> EPG::parse(QXmlStreamReader& xml)
+QMap<QString, QString>EPG::parse(QXmlStreamReader& xml)
 {
     QMap<QString, QString> chaa;
     if(xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "channel") { return chaa; }
@@ -312,22 +329,22 @@ void EPG::keyPressEvent(QKeyEvent *event)
     {
         if (sound == true)
         {
+            /* mute */
             libvlc_audio_set_volume(tvos_player,0);
             sound = false;
+            printImg("img/mute.png", 1000);
         }
         else
         {
+            /* unmute */
             libvlc_audio_set_volume(tvos_player,sound_value);
             sound = true;
+            printImg("img/unmute.png", 1000);
         }
     }
     if(event->key() == Qt::Key_L)
     {
-        libvlc_video_set_logo_string(tvos_player, 1, "test.png");
-        libvlc_video_set_logo_int(tvos_player, libvlc_logo_x, 505);
-        libvlc_video_set_logo_int(tvos_player, libvlc_logo_y, 305);
-        libvlc_video_set_logo_int(tvos_player, libvlc_logo_opacity, 255);
-        libvlc_video_set_logo_int(tvos_player, libvlc_logo_enable, 1);
+        printImg("test.png", 1000);
     }
     if(event->key() == Qt::Key_N) //To defined
     {

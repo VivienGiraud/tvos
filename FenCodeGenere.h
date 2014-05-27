@@ -32,7 +32,7 @@ public:
     ~EPG();
 
 protected:
-        void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 private:
     Ui::QXSRExample *ui;
 
@@ -59,9 +59,11 @@ private:
     bool EPGCOMPARE;
     bool sound;
     int sound_value;
+
 private slots:
     void parseXML();
     void showTime();
+    void printImg(char *name, int ms);
 
 };
 
