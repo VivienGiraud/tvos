@@ -12,6 +12,9 @@
 #include <vlc/vlc.h>
 #include <unistd.h>
 
+/* This define mean an usb DVB-t dongle is connected, else it will play a video */
+#define DVBTDONGLE
+
 EPG::EPG(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QXSRExample)
@@ -68,11 +71,12 @@ void EPG::buildingWidgetVideo()
 #else
 #error Platform not supported!
 #endif
-#ifdef __x86_64__
-m = libvlc_media_new_path (inst, "test.mp4");
-#elif __ARM_ARCH_7A__
+
+#ifdef DVBTDONGLE
 /* Set playlist */
 m = libvlc_media_new_path (inst, "vlcchans.xspf");
+#else
+m = libvlc_media_new_path (inst, "test.mp4");
 #endif
 
 ml = libvlc_media_list_new (inst);
