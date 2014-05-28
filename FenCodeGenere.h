@@ -19,6 +19,10 @@
 #include <QDesktopWidget>
 #include <QXmlStreamReader>
 
+#define MUTEIMG "img/mute.png"
+#define UNMUTEIMG "img/unmute.png"
+#define TESTIMG "test.png"
+
 namespace Ui {
 class QXSRExample;
 }
@@ -63,7 +67,7 @@ private:
 private slots:
     void parseXML();
     void showTime();
-    void printImg(char *name, int ms);
+    void printImg(const char *name, int ms);
 
 };
 

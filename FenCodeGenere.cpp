@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 /* This define mean an usb DVB-t dongle is connected, else it will play a video */
-#define DVBTDONGLE
+//#define DVBTDONGLE
 
 EPG::EPG(QWidget *parent) :
     QMainWindow(parent),
@@ -28,7 +28,7 @@ EPG::EPG(QWidget *parent) :
 
     /* --- Function calls --- */
     buildingWidgetVideo();
-    //parseXML();
+    parseXML();
     setSize();
     printDate();
 }
@@ -84,11 +84,11 @@ ml = libvlc_media_list_new (inst);
 mlp = libvlc_media_list_player_new (inst);
 tvos_player = libvlc_media_player_new(inst);
 
-/* Point the media list at our media list player. This is the crucial ! */
+/* Point the media list at our media list player. This is crucial ! */
 libvlc_media_list_player_set_media_player(mlp, tvos_player);
 
 /* Parse playlist */
-for (unsigned i = 0; i < 5; i++)
+for (unsigned i = 0; i < 5; i++) // TODO: Made something more automated (get number of media in playlist)
     libvlc_media_list_add_media(ml, m);
 
 libvlc_media_list_player_set_media_list(mlp, ml);
@@ -110,15 +110,19 @@ ui->video->setFocus();
 }
 
 /* name = path to the file, ms = display for how much milliseconds */
-void EPG::printImg(char *name, int ms)
+void EPG::printImg(const char *name, int ms)
 {
+  struct timespec ts =
+  {
+    ms / 1000, (ms % 1000) * 1000 * 1000
+  };
+
   libvlc_video_set_logo_string(tvos_player, libvlc_logo_file, name);
   libvlc_video_set_logo_int(tvos_player, libvlc_logo_enable, 1);
   libvlc_video_set_logo_int(tvos_player, libvlc_logo_x, 505);
   libvlc_video_set_logo_int(tvos_player, libvlc_logo_y, 0);
   libvlc_video_set_logo_int(tvos_player, libvlc_logo_opacity, 128);
 
-  struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
   nanosleep(&ts, NULL);
 
   libvlc_video_set_logo_int(tvos_player, libvlc_logo_enable, 0);
@@ -383,7 +387,7 @@ void EPG::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_Escape)
     {
         libvlc_media_player_stop (tvos_player); // Stop playing
-        /*Free the media_player */
+        /* Free the media_player */
         libvlc_media_player_release (tvos_player);
         libvlc_release (inst);
         this->close();
